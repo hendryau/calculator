@@ -4,7 +4,6 @@ import {CalcAppComponent} from "./components/calc-app.component";
 import {CalculatorComponent} from "./components/calculator.component";
 import {FormsModule} from "@angular/forms";
 import {CalculatorService} from "./services/calculator.service";
-import {CalcBtnComponent} from "./components/calc-btn.component";
 import {CalcActivateDirective} from "./directives/calc-activate.directive";
 
 @NgModule({
@@ -12,8 +11,7 @@ import {CalcActivateDirective} from "./directives/calc-activate.directive";
         BrowserModule, FormsModule
     ],
     declarations: [
-        CalcAppComponent, CalculatorComponent, CalcBtnComponent,
-        CalcActivateDirective
+        CalcAppComponent, CalculatorComponent, CalcActivateDirective
     ],
     providers: [
         CalculatorService

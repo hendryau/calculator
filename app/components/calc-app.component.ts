@@ -1,5 +1,8 @@
 import {Component} from "@angular/core";
 
+/**
+ * The bootstrapped wrapper component.
+ */
 @Component({
     selector: "calc-app",
     styles: [`
@@ -11,6 +14,4 @@ import {Component} from "@angular/core";
         <calculator></calculator>
     `
 })
-export class CalcAppComponent {
-
-}
+export class CalcAppComponent { }

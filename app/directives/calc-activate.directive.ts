@@ -16,12 +16,27 @@ export class CalcActivateDirective {
 
     constructor(private elementRef: ElementRef) { }
 
+    /**
+     * Causes the directive to activate if it equals a KeyboardEvent#key. Note that
+     * this is ignored if CalcActivateDirective#keyVals is also set.
+     */
     @Input() private keyVal: string;
 
+    /**
+     * Causes the directive to activate if any of its values equals a
+     * KeyboardEvent#key.
+     */
     @Input() private keyVals: string[];
 
+    /**
+     * Emitted when the elementRef is clicked or the mapped keys are pressed.
+     */
     @Output() private activate: EventEmitter<any> = new EventEmitter<any>();
 
+    /**
+     * Called when mapped key is pressed or elementRef is clicked. Sets background-color
+     * of element temporarily.
+     */
     private doActivate(): void {
         this.activate.emit();
 
@@ -31,14 +46,20 @@ export class CalcActivateDirective {
         setTimeout(() => this.elementRef.nativeElement.style.backgroundColor = "", 300);
     }
 
+    /**
+     * Listen for clicks on the element.
+     */
     @HostListener("click")
     private onClick(): void {
         this.doActivate();
     }
 
-    // TODO improve key recognition... for example ctrl + for zoom triggers the + key
+    /**
+     * Listen for "keydown" events corresponding to mapped keys.
+     */
     @HostListener("window:keydown", ["$event"])
     private onKeydown(evt: KeyboardEvent): void {
+        // TODO improve key recognition... for example "ctrl +" for zoom triggers the "+" key to activate
         if (evt.key === this.keyVal || this.keyVals && this.keyVals.indexOf(evt.key) >= 0) {
             this.doActivate();
         }

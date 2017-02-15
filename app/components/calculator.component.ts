@@ -1,6 +1,9 @@
 import {Component} from "@angular/core";
 import {CalculatorService} from "../services/calculator.service";
 
+/**
+ * The calculator component.
+ */
 @Component({
     selector: "calculator",
     styles: [`
@@ -42,12 +45,12 @@ import {CalculatorService} from "../services/calculator.service";
     template: `
         <div id="history">{{leftOperand}} {{operator}}</div>
 
-        <div id="workspace">{{val || leftOperand || '0'}}</div>
+        <div id="workspace">{{currVal || leftOperand || '0'}}</div>
         
         <div id="numKeys">
-            <button *ngFor="let num of numKeys" calcActivate [keyVal]="num" (activate)="concatVal(num)">{{num}}</button
-            ><button calcActivate [keyVal]="'.'" (activate)="concatVal('.')">.</button
-            ><button calcActivate [keyVal]="'0'" (activate)="concatVal('0')">0</button
+            <button *ngFor="let num of numKeys" calcActivate [keyVal]="num" (activate)="concatNum(num)">{{num}}</button
+            ><button calcActivate [keyVal]="'.'" (activate)="concatNum('.')">.</button
+            ><button calcActivate [keyVal]="'0'" (activate)="concatNum('0')">0</button
             ><button calcActivate [keyVals]="['=', 'Enter']" (activate)="performEquals()">=</button>
         </div>
         
@@ -63,58 +66,86 @@ import {CalculatorService} from "../services/calculator.service";
 })
 export class CalculatorComponent {
 
-    private val: string;
+    /**
+     * The value that is modified when buttons are clicked
+     */
+    private currVal: string;
 
+    /**
+     * The value that is set when an operation is performed.
+     */
     private leftOperand: number;
 
+    /**
+     * The operator
+     */
     private operator: string;
 
+    /**
+     * Helper array to ngFor over for "numpad" buttons.
+     */
     private numKeys: string[] = ["7","8","9","4","5","6","3","2","1"];
 
     constructor(private calcService: CalculatorService) { }
 
+    /**
+     * Resets to initial state.
+     */
     private clear() {
-        this.val = null;
+        this.currVal = null;
         this.leftOperand = null;
         this.operator = null;
     }
 
-    private concatVal(val: string): void {
-        if (!this.val) {
-           this.val = "";
+    /**
+     * Append values to CalculatorComponent#currVal. Inputs are sanitized. For
+     * example. See CalculatorService#sanitize for information on input sanitization.
+     */
+    private concatNum(val: string): void {
+        if (!this.currVal) {
+           this.currVal = "";
         }
-        this.val = this.calcService.sanitize(this.val += val);
+        this.currVal = this.calcService.sanitize(this.currVal += val);
     }
 
+    /**
+     * Removes last character from CalculatorComponent#currVal.
+     */
     private deleteVal(): void {
-        if (this.val != null) {
-            this.val = this.val.slice(0, this.val.length - 1);
+        if (this.currVal != null) {
+            this.currVal = this.currVal.slice(0, this.currVal.length - 1);
         }
         else if (this.leftOperand != null) {
-            this.val = this.leftOperand.toString();
+            this.currVal = this.leftOperand.toString();
         }
 
-        if (!this.val) {
-            this.val = "0";
+        if (!this.currVal) {
+            this.currVal = "0";
         }
     }
 
+    /**
+     * Evaluate currVal and leftOperand with the currently specified operator.
+     */
     private performEquals(): void {
         this.performOperation(this.operator);
         this.operator = null;
     }
 
+    /**
+     * Evaluate currVal and leftOperand with a provided operator.
+     */
     private performOperation(operator: string): void {
         if (this.operator) {
-            let rightOperand = Number.parseFloat(this.val || "0");
+            let rightOperand = Number.parseFloat(this.currVal || "0");
             this.leftOperand = this.calcService.performOperation(this.operator, this.leftOperand, rightOperand);
         }
-        else if (this.val) {
-            this.leftOperand = Number.parseFloat(this.val);
+        else if (this.currVal) {
+            this.leftOperand = Number.parseFloat(this.currVal);
         }
 
         this.operator = operator;
-        this.val = null;
+        this.currVal = null;
     }
 
 }
